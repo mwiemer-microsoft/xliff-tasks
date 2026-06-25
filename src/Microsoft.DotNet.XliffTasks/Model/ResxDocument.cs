@@ -78,7 +78,7 @@ namespace XliffTasks.Model
         private static string GetRelativePath(string fromDirectory, string toPath)
         {
             // Ensure directory URI ends with separator so MakeRelativeUri treats it as a directory.
-            Uri fromUri = new Uri(fromDirectory.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar);
+            Uri fromUri = new Uri(fromDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar);
             Uri toUri = new Uri(toPath);
             Uri relativeUri = fromUri.MakeRelativeUri(toUri);
             string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
