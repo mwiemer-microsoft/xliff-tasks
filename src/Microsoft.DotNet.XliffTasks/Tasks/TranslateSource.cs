@@ -38,7 +38,7 @@ namespace XliffTasks.Tasks
 
             Directory.CreateDirectory(Path.GetDirectoryName(translatedFullPath));
 
-            sourceDocument.RewriteRelativePathsToAbsolute(Path.GetFullPath(sourcePath));
+            sourceDocument.RewriteRelativePathsForOutputPath(Path.GetFullPath(sourcePath), translatedFullPath);
             sourceDocument.Save(translatedFullPath);
         }
     }

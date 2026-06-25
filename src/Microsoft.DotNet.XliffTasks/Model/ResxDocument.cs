@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
@@ -54,7 +55,7 @@ namespace XliffTasks.Model
             }
         }
 
-        public override void RewriteRelativePathsToAbsolute(string sourceFullPath)
+        public override void RewriteRelativePathsForOutputPath(string sourceFullPath, string outputFullPath)
         {
             foreach (XElement node in Document.Descendants("data"))
             {
@@ -64,12 +65,24 @@ namespace XliffTasks.Model
                     string[] splitRelativePathAndSerializedType = valueNodeOfFileRef.Value.Split(';');
                     string resourceRelativePath = splitRelativePathAndSerializedType[0].Replace('\\', Path.DirectorySeparatorChar);
 
-                    string absolutePath = Path.Combine(Path.GetDirectoryName(sourceFullPath), resourceRelativePath);
-                    splitRelativePathAndSerializedType[0] = absolutePath;
+                    string absoluteResourcePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFullPath), resourceRelativePath));
+                    string outputDirectory = Path.GetDirectoryName(outputFullPath);
+                    string relativePath = GetRelativePath(outputDirectory, absoluteResourcePath);
+                    splitRelativePathAndSerializedType[0] = relativePath;
 
                     valueNodeOfFileRef.Value = string.Join(";", splitRelativePathAndSerializedType);
                 }
             }
+        }
+
+        private static string GetRelativePath(string fromDirectory, string toPath)
+        {
+            // Ensure directory URI ends with separator so MakeRelativeUri treats it as a directory.
+            Uri fromUri = new Uri(fromDirectory.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar);
+            Uri toUri = new Uri(toPath);
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            return relativePath.Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }
