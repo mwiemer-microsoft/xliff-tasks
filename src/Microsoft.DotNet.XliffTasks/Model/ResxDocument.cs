@@ -55,6 +55,24 @@ namespace XliffTasks.Model
             }
         }
 
+        public override void RewriteRelativePathsToAbsolute(string sourceFullPath)
+        {
+            foreach (XElement node in Document.Descendants("data"))
+            {
+                if (node.Attribute("type")?.Value == "System.Resources.ResXFileRef, System.Windows.Forms")
+                {
+                    XElement valueNodeOfFileRef = node.Element("value");
+                    string[] splitRelativePathAndSerializedType = valueNodeOfFileRef.Value.Split(';');
+                    string resourceRelativePath = splitRelativePathAndSerializedType[0].Replace('\\', Path.DirectorySeparatorChar);
+
+                    string absolutePath = Path.Combine(Path.GetDirectoryName(sourceFullPath), resourceRelativePath);
+                    splitRelativePathAndSerializedType[0] = absolutePath;
+
+                    valueNodeOfFileRef.Value = string.Join(";", splitRelativePathAndSerializedType);
+                }
+            }
+        }
+
         public override void RewriteRelativePathsForOutputPath(string sourceFullPath, string outputFullPath)
         {
             foreach (XElement node in Document.Descendants("data"))
