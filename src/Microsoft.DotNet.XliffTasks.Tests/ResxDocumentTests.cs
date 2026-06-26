@@ -102,19 +102,21 @@ namespace XliffTasks.Tests
             string expectedRelativePath = Uri.UnescapeDataString(fromUri.MakeRelativeUri(toUri).ToString())
                 .Replace('/', Path.DirectorySeparatorChar);
 
-            string source =
-@"<root>
-  <data name=""400"" type=""System.Resources.ResXFileRef, System.Windows.Forms"">
-    <value>RESOURCEPATH;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-</root>".Replace("RESOURCEPATH", resourceRelativePath);
+            string source = """
+                <root>
+                  <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
+                    <value>RESOURCEPATH;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+                  </data>
+                </root>
+                """.TrimEnd().Replace("RESOURCEPATH", resourceRelativePath);
 
-            string expectedTranslation =
-@"<root>
-  <data name=""400"" type=""System.Resources.ResXFileRef, System.Windows.Forms"">
-    <value>RELATIVEPATH;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-</root>".Replace("RELATIVEPATH", expectedRelativePath);
+            string expectedTranslation = """
+                <root>
+                  <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
+                    <value>RELATIVEPATH;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+                  </data>
+                </root>
+                """.TrimEnd().Replace("RELATIVEPATH", expectedRelativePath);
 
             ResxDocument document = new();
             StringWriter writer = new();
